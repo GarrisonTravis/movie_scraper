@@ -3,6 +3,7 @@
 # Program that gets all movies/tv shows for an actor/actress from user input
 # Can also supply a rating to get the last 5 projects with a rating higher than user input rating
 
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
@@ -10,6 +11,9 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+import os, inspect
+
+current_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile(inspect.currentframe() ))[0]))
 
 
 # Function that gets the last 5 movies/tv shows that have a better rating than the rating given by the user
@@ -27,6 +31,8 @@ def rating_specific(rating_greater_than, movies, driver):
         # Have to find the movies again, if this isn't done will get a stale element exception
         movies = WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located(
             (By.XPATH, "//div[contains(@id, 'actor-') or contains(@id, 'actress-')]")))
+
+        print("Working ... ")
 
         # Don't include pre/post production projects
         if "pre-production" not in movies[i].text and "post-production" not in movies[i].text and "announced" not in \
@@ -73,7 +79,7 @@ def rating_specific(rating_greater_than, movies, driver):
 # Function that prints all the movies/tv shows the actor/actress has appeared in
 # Will print Date | Title | Character | Episode (If applicable)
 def non_rating_specific(movies):
-    print("Date | Title | Character | Episode (If applicable)\n")
+    print("Date | Title | Character\n")
     for i in movies:
         if "pre-production" not in i.text and "post-production" not in i.text and "announced" not in i.text and "filming" \
                 not in i.text and "completed" not in i.text:
@@ -95,14 +101,24 @@ def main():
         rating_greater_than: str
         rating_greater_than = input("Projects with rating above: ")
 
-    # options = Options()
-    # options.headless = True
-    # options.add_argument("--window-size=1920,1200")
+    print("Working ... ")
 
-    DRIVER_PATH = r"C:\Users\gtrav\PycharmProjects\imdbscraper\chromedriver.exe"
-    driver = webdriver.Chrome(executable_path=DRIVER_PATH)
-    #driver = webdriver.Chrome(options=options, executable_path=DRIVER_PATH)
+    options = Options()
+    options.headless = True
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument('--no-proxy-server')
+    options.add_argument("--log-level=3")
+    options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    # options.add_argument("--proxy-server='direct://'")
+    # options.add_argument("--proxy-bypass-list=*")
+
+    # driver_path = r"C:\Users\gtrav\PycharmProjects\imdbscraper\chromedriver.exe"
+    driver_path = os.path.join(current_folder, "chromedriver.exe")
+    # driver = webdriver.Chrome(executable_path=driver_path)
+    driver = webdriver.Chrome(options=options, executable_path=driver_path)
     driver.get('https://imdb.com')
+
+    print("Working ... ")
 
     # Enter the actor's name into the search bar, hit Enter
     search_bar = driver.find_element_by_id("suggestion-search")
@@ -114,6 +130,7 @@ def main():
     actor_link = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//a[contains(text(), '%s')]" %
                                                                                  actor_name))).click()
 
+    print("Working ... ")
     # Click on the actor/actress tab to get the list of movies/tv shows they have acted in
     # Necessary because they might have a tab for producer before the actor tab
     actor_tab = WebDriverWait(driver, 10).until(EC.presence_of_element_located(
@@ -128,6 +145,7 @@ def main():
         non_rating_specific(movies)
 
     driver.quit()
+    input("Press to exit:")
 
 
 main()
