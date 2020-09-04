@@ -16,4 +16,5 @@ Output:
  - Or, it will print the last five projects from the actor/actress that have an imdb rating higher than the rating supplied from input
  
 Copyright © 2020 Garrison Travis
+
 Data credit to www.imbd.com
