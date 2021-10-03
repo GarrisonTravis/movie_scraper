@@ -1,4 +1,4 @@
-# imdb_webscraper
+# movie_scraper
 
 This repository contains a web scraper that scrapes imdb.com to return movies/tv shows from a patricular actor/actress.
 
